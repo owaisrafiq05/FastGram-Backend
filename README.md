@@ -6,6 +6,10 @@ A comprehensive backend API for FastGram (Instagram-like social media platform) 
 
 - 🔐 **JWT Authentication** - Secure user authentication with access and refresh tokens
 - 👤 **User Management** - Complete user profile management and social features
+- 📝 **Post Management** - Create, read, update, delete posts with images
+- ❤️ **Likes System** - Like and unlike posts with real-time counters
+- 💬 **Comments** - Add, view, and delete comments on posts
+- 🔄 **Feed System** - Personalized feed from followed users
 - 🔒 **Password Security** - Bcrypt hashing with salt rounds
 - 🛡️ **Security** - Helmet.js for security headers, CORS protection
 - 📊 **Database** - PostgreSQL with Neon DB integration
@@ -67,7 +71,9 @@ The application will automatically create the necessary tables when it starts:
 
 - **users** - User accounts and profiles
 - **refresh_tokens** - JWT refresh token storage
-- **posts** - User posts (for future implementation)
+- **posts** - User posts with captions and images
+- **likes** - Post likes tracking
+- **comments** - Post comments
 - **followers** - User follow relationships
 
 ## API Endpoints
@@ -193,6 +199,87 @@ GET /api/users/:username/followers?page=1&limit=20
 GET /api/users/:username/following?page=1&limit=20
 ```
 
+### Post Routes (`/api/posts`)
+
+#### Create Post
+```http
+POST /api/posts
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "caption": "Beautiful sunset! 🌅",
+  "imageUrl": "https://example.com/image.jpg"
+}
+```
+
+#### Get Post by ID
+```http
+GET /api/posts/:postId
+```
+
+#### Update Post
+```http
+PUT /api/posts/:postId
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "caption": "Updated caption"
+}
+```
+
+#### Delete Post
+```http
+DELETE /api/posts/:postId
+Authorization: Bearer <access-token>
+```
+
+#### Get User Posts
+```http
+GET /api/posts/user/:username?page=1&limit=20
+```
+
+#### Get Feed (Timeline)
+```http
+GET /api/posts/feed/timeline?page=1&limit=20
+Authorization: Bearer <access-token>
+```
+
+#### Like Post
+```http
+POST /api/posts/:postId/like
+Authorization: Bearer <access-token>
+```
+
+#### Unlike Post
+```http
+DELETE /api/posts/:postId/like
+Authorization: Bearer <access-token>
+```
+
+#### Add Comment
+```http
+POST /api/posts/:postId/comments
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "commentText": "Great photo! 👍"
+}
+```
+
+#### Get Post Comments
+```http
+GET /api/posts/:postId/comments?page=1&limit=20
+```
+
+#### Delete Comment
+```http
+DELETE /api/posts/:postId/comments/:commentId
+Authorization: Bearer <access-token>
+```
+
 ## Response Format
 
 All API responses follow this format:
@@ -246,8 +333,18 @@ The API includes comprehensive error handling:
 - **401**: Unauthorized (invalid credentials)
 - **403**: Forbidden (invalid token, inactive account)
 - **404**: Not Found (user/resource not found)
-- **409**: Conflict (duplicate username/email)
+- **409**: Conflict (duplicate username/email, already liked)
 - **500**: Internal Server Error
+
+## 📝 Post Management
+
+For detailed information about post management APIs, including:
+- Creating and managing posts
+- Like/Unlike functionality
+- Comments system
+- Feed/Timeline
+
+See **[POST_API_GUIDE.md](POST_API_GUIDE.md)** for comprehensive documentation and examples.
 
 ## Development
 
@@ -255,12 +352,14 @@ The API includes comprehensive error handling:
 ```
 FastGram-Backend/
 ├── config/
-│   └── database.js          # Database configuration
+│   ├── database.js          # Database configuration
+│   └── swagger.js           # Swagger/OpenAPI configuration
 ├── middleware/
-│   └── auth.js             # Authentication middleware
+│   └── auth.js              # Authentication middleware
 ├── routes/
-│   ├── auth.js             # Authentication routes
-│   └── users.js            # User management routes
+│   ├── auth.js              # Authentication routes
+│   ├── users.js             # User management routes
+│   └── posts.js             # Post management routes (NEW)
 ├── server.js               # Main server file
 ├── package.json            # Dependencies
 └── .env                    # Environment variables

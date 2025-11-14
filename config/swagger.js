@@ -311,6 +311,153 @@ const options = {
               format: 'date-time'
             }
           }
+        },
+        Post: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'Post ID'
+            },
+            userId: {
+              type: 'integer',
+              description: 'User ID of post author'
+            },
+            caption: {
+              type: 'string',
+              description: 'Post caption text'
+            },
+            imageUrl: {
+              type: 'string',
+              format: 'uri',
+              description: 'URL to post image'
+            },
+            likesCount: {
+              type: 'integer',
+              description: 'Number of likes'
+            },
+            commentsCount: {
+              type: 'integer',
+              description: 'Number of comments'
+            },
+            isLiked: {
+              type: 'boolean',
+              description: 'Whether current user has liked the post'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Post creation timestamp'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp'
+            },
+            user: {
+              type: 'object',
+              properties: {
+                username: {
+                  type: 'string'
+                },
+                fullName: {
+                  type: 'string'
+                },
+                profilePictureUrl: {
+                  type: 'string'
+                },
+                isVerified: {
+                  type: 'boolean'
+                }
+              }
+            }
+          }
+        },
+        CreatePostRequest: {
+          type: 'object',
+          required: ['imageUrl'],
+          properties: {
+            caption: {
+              type: 'string',
+              maxLength: 2200,
+              description: 'Post caption (optional, max 2200 characters)'
+            },
+            imageUrl: {
+              type: 'string',
+              format: 'uri',
+              description: 'URL to post image (required)'
+            }
+          }
+        },
+        UpdatePostRequest: {
+          type: 'object',
+          properties: {
+            caption: {
+              type: 'string',
+              maxLength: 2200,
+              description: 'Updated caption text'
+            }
+          }
+        },
+        Comment: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'Comment ID'
+            },
+            userId: {
+              type: 'integer',
+              description: 'User ID of comment author'
+            },
+            postId: {
+              type: 'integer',
+              description: 'Post ID'
+            },
+            commentText: {
+              type: 'string',
+              description: 'Comment text'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Comment creation timestamp'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp'
+            },
+            user: {
+              type: 'object',
+              properties: {
+                username: {
+                  type: 'string'
+                },
+                fullName: {
+                  type: 'string'
+                },
+                profilePictureUrl: {
+                  type: 'string'
+                },
+                isVerified: {
+                  type: 'boolean'
+                }
+              }
+            }
+          }
+        },
+        CommentRequest: {
+          type: 'object',
+          required: ['commentText'],
+          properties: {
+            commentText: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 500,
+              description: 'Comment text (1-500 characters)'
+            }
+          }
         }
       }
     },

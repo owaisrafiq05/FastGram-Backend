@@ -7,6 +7,7 @@ require("dotenv").config();
 // Import routes
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
+const postRoutes = require("./routes/posts");
 
 // Import Swagger
 const { swaggerUi, specs } = require("./config/swagger");
@@ -51,6 +52,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, {
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 // 404 handler
 app.use((req, res) => {

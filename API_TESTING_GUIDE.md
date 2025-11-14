@@ -122,6 +122,88 @@ curl -X GET "http://localhost:3000/api/users/johndoe/following?page=1&limit=20" 
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
+## 📝 Post Management APIs
+
+### 15. Create Post
+```bash
+curl -X POST http://localhost:3000/api/posts \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "Beautiful sunset! 🌅",
+    "imageUrl": "https://picsum.photos/400/300"
+  }'
+```
+
+### 16. Get Post by ID
+```bash
+curl -X GET http://localhost:3000/api/posts/1
+```
+
+### 17. Update Post Caption
+```bash
+curl -X PUT http://localhost:3000/api/posts/1 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "Updated caption text 🎉"
+  }'
+```
+
+### 18. Delete Post
+```bash
+curl -X DELETE http://localhost:3000/api/posts/1 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 19. Get User Posts
+```bash
+curl -X GET "http://localhost:3000/api/posts/user/johndoe?page=1&limit=20"
+```
+
+### 20. Get Feed (Timeline)
+```bash
+curl -X GET "http://localhost:3000/api/posts/feed/timeline?page=1&limit=20" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## ❤️ Like Management APIs
+
+### 21. Like Post
+```bash
+curl -X POST http://localhost:3000/api/posts/1/like \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 22. Unlike Post
+```bash
+curl -X DELETE http://localhost:3000/api/posts/1/like \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## 💬 Comment Management APIs
+
+### 23. Add Comment
+```bash
+curl -X POST http://localhost:3000/api/posts/1/comments \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "commentText": "Great photo! 👍"
+  }'
+```
+
+### 24. Get Post Comments
+```bash
+curl -X GET "http://localhost:3000/api/posts/1/comments?page=1&limit=20"
+```
+
+### 25. Delete Comment
+```bash
+curl -X DELETE http://localhost:3000/api/posts/1/comments/1 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
 ## 🧪 Complete Testing Workflow
 
 ### Step 1: Register a User
@@ -153,7 +235,39 @@ curl -X GET http://localhost:3000/api/users/profile \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-### Step 4: Update Profile
+### Step 4: Create a Post
+```bash
+curl -X POST http://localhost:3000/api/posts \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "My first post! 🎉",
+    "imageUrl": "https://picsum.photos/400/300"
+  }'
+```
+
+### Step 5: Like and Comment on Post
+```bash
+# Like the post
+curl -X POST http://localhost:3000/api/posts/1/like \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Add a comment
+curl -X POST http://localhost:3000/api/posts/1/comments \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "commentText": "Amazing! 🔥"
+  }'
+```
+
+### Step 6: View Your Feed
+```bash
+curl -X GET "http://localhost:3000/api/posts/feed/timeline?page=1&limit=10" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### Step 7: Update Profile
 ```bash
 curl -X PUT http://localhost:3000/api/users/profile \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
