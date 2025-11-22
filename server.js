@@ -8,6 +8,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const postRoutes = require("./routes/posts");
+const groupRoutes = require("./routes/groups");
 
 // Import Swagger
 const { swaggerUi, specs } = require("./config/swagger");
@@ -53,6 +54,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/groups", groupRoutes);
 
 // 404 handler
 app.use((req, res) => {
