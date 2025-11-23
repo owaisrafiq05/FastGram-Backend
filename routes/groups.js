@@ -643,18 +643,30 @@ router.post('/:groupId/posts', authenticateToken, upload.single('image'), async 
  */
 router.get('/:groupId/posts', authenticateToken, async (req, res) => {
   try {
-    const { groupId } = req.params;
-    const { page = 1, limit = 20 } = req.query;
-    const offset = (page - 1) * limit;
+    const groupIdRaw = req.params.groupId;
+    const pageRaw = req.query.page;
+    const limitRaw = req.query.limit;
+
+    const groupId = parseInt(groupIdRaw, 10);
+    const page = parseInt(pageRaw || '1', 10);
+    const limit = parseInt(limitRaw || '20', 10);
+
+    if (Number.isNaN(groupId) || groupId <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid groupId' });
+    }
+    const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+    const safeLimit = Number.isNaN(limit) || limit < 1 ? 20 : limit;
+    const offset = (safePage - 1) * safeLimit;
 
     const postsRes = await pool.query(
-      `SELECT p.*, u.username, u.full_name, u.profile_picture_url
+      `SELECT p.id, p.user_id, p.caption, p.image_url, p.group_id, p.likes_count, p.comments_count, p.created_at, p.updated_at,
+              u.username, u.full_name, u.profile_picture_url
        FROM posts p
        LEFT JOIN users u ON p.user_id = u.id
        WHERE p.group_id = $1
        ORDER BY p.created_at DESC
        LIMIT $2 OFFSET $3`,
-      [groupId, limit, offset]
+      [groupId, safeLimit, offset]
     );
 
     res.json({ success: true, data: { posts: postsRes.rows } });
@@ -738,3 +750,61 @@ router.delete('/:groupId/posts/:postId', authenticateToken, async (req, res) => 
 });
 
 module.exports = router;
+
+// Get groups for a user (groups the user is a member of)
+/**
+ * @swagger
+ * /api/groups/user/{userId}:
+ *   get:
+ *     summary: List groups a user is member of
+ *     tags: [Group Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *     responses:
+ *       200:
+ *         description: Groups retrieved successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/user/:userId', authenticateToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = (page - 1) * limit;
+
+    const groupsRes = await pool.query(
+      `SELECT g.id, g.name, g.description, g.is_private, g.owner_id, g.members_count, g.created_at, g.updated_at,
+              gm.role as my_role,
+              u.username as owner_username, u.full_name as owner_full_name, u.profile_picture_url as owner_profile_picture
+       FROM group_members gm
+       JOIN groups g ON gm.group_id = g.id
+       LEFT JOIN users u ON g.owner_id = u.id
+       WHERE gm.user_id = $1
+       ORDER BY g.created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [userId, limit, offset]
+    );
+
+    res.json({ success: true, data: { groups: groupsRes.rows } });
+  } catch (error) {
+    console.error('List user groups error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
